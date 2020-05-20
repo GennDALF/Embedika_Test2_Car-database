@@ -15,18 +15,18 @@
 | :--- | :---: | :---: |
 | ```get_cars()``` <br/> Вывод списка автомобилей | ```_and=True```<br/><br/>```**filters```<br/>"DD MM YYYY" | float <br/> |
 | ```add_car()``` <br/> Добавление автомобиля(-ей) | date_range_string <br/> "DD MM YYYY - <br/>DD MM YYYY" | float <br/> |
-| ```del_car()``` <br/> Максимальная и минимальная цены за промежуток времени |date_range_string <br/> "DD MM YYYY - <br/>DD MM YYYY" | JSON str |
+| ```del_car()``` <br/> Удаление автомобиля(-ей) |date_range_string <br/> "DD MM YYYY - <br/>DD MM YYYY" | JSON str |
 | ```get_stats()``` <br/> Статистика по базе данных |   –   | JSON str * |
 
 \* structure of ```get_stats()``` JSON output is:
 ```
 [
   {
-    "all entries": <int>,  # number of all entries 
-    "start of monitoring": <str>,  # date of first monitoring period start: "DD mmmm YYYY"
-    "end of monitoring": <str>,  # date of last monitoring period end: "DD mmmm YYYY"
-    "global min price": [<float>, <str>],  # list of minimal price and corresponding date
-    "global max price": [<float>, <str>]  # list of maximal price and corresponding date
+    'total_entries': <int>,   # number of all cars in the database
+    'first_entry': <str>,     # time and date of the first entry adding: "HH:MM DD.mm.YYYY"
+    'last_update': <str>,     # time and date of the last entry adding: "HH:MM DD.mm.YYYY"
+    'total_queries': <int>,   # number of all queries made to the database
+    'last_query': <str>       # time and date of the last querie made: "HH:MM DD.mm.YYYY"
   }
 ]
 ```
