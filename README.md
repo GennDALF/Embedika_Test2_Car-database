@@ -2,9 +2,15 @@
 ### Задание
 >Необходимо реализовать сервис справочника автомобилей с хранением данных в базе или файле.
 ><br/>Минимальная информация по объекту:<br/> – номер;<br/> – марка;<br/> – цвет;<br/> – год выпуска.
+
 #
-### Описание API
-#
+
+### Введение
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Ввод и вывод осуществляется в формате JSON, поэтому базу автомобилей решено хранить в соответствующем файле. Используемая кодировка UTF-8. <br/><br/>
+
+### Описание методов API
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Для добавления одного или нескольких автомобилей возможно передать JSON строку. Альтернативой является ручное именование передаваемых спецификаций автомобиля или, что то же самое, передача словаря – в таком случае за одно обращение можно добавить только одну запись. В качестве фильтров функции ```get_cars()``` возможно использовать те же поля, что и для создания записи – параметры ```**filters``` и ```**car_specs``` проверяются на соответствие одному и тому же словарю (см. ниже).
 
 | Метод | Параметры | Возвращаемый результат |
 | :--- | :---: | :---: |
@@ -13,28 +19,61 @@
 | ```del_car()``` <br/> Удаление автомобиля(-ей) | ```*plate_numbers```<br/>Множество строк с номерами автомобилей для удаления | str |
 | ```get_stats()``` <br/> Статистика по базе данных |   –   | JSON str \*\* |
 
-\* all possible fields of the database entry: ```'r'``` is required
+\* поля для создания записи об автомобиле: помеченные ```'r'``` обязательны
 ```
 {
-  'plate': 'r',
-  'brand': 'r',
-  'model': 'r',
-  'year': 'r',
-  'color': 'r',
-  'VIN': '',
-  'power': '',
-  'body': ''
+  "plate": 'r',
+  "brand": 'r',
+  "model": 'r',
+  "year": 'r',
+  "color": 'r',
+  "VIN": '',
+  "power": '',
+  "body": ''
 }
 ```
-\*\* structure of ```get_stats()``` JSON output is:
+\*\* структура JSON вывода функции ```get_stats()```:
 ```
 [
   {
-    'total_entries': <int>,   # number of all cars in the database
-    'first_entry': <str>,     # time and date of the first entry adding: "HH:MM DD.mm.YYYY"
-    'last_update': <str>,     # time and date of the last entry adding: "HH:MM DD.mm.YYYY"
-    'total_queries': <int>,   # number of all queries made to the database
-    'last_query': <str>       # time and date of the last querie made: "HH:MM DD.mm.YYYY"
+    "total_entries": <int>,   # общее количество всех автомобилей в базе
+    "first_entry": <str>,     # дата и время добавления первой записи
+    "last_update": <str>,     # дата и время добавления последней записи
+    "total_queries": <int>,   # количество всех совершённых обращений
+    "last_query": <str>       # дата и время последнего обращения
   }
 ]
+```
+Все значения времени и даты выводятся в следующем формате: "HH:MM DD.mm.YYYY", например "15:40 03.05.2020"
+
+### Примеры
+```
+>>> car1 = {
+...     'plate': "l924jf",
+...     'brand': "GAZ",
+...     'model': "2410",
+...     'year': "1987",
+...     'color': "white",
+...     'power': "70",
+... }
+>>> add_car(**car1)
+Successful
+
+>>> car2 = '[{"plate": "e456az", "brand": "Lada", "model": "Kalina", "year": "2013", ' \
+...        '"color": "grey", "VIN": "ASDFG8YQ34WIR3","body": "sedan"}]'
+>>> add_car(entry=car1)
+Successful
+
+>>> get_cars(color="white", brand="Lada")
+[{'plate': 'v483qw', 'brand': 'Lada', 'model': 'Kalina', 'year': '2013', 'color': 'white', 'VIN': 'ASDFG8YQ34WIR3S', 'body': 'sedan'}, 
+ {'plate': 'g631qe', 'brand': 'Lada', 'model': 'Kalina', 'year': '2014', 'color': 'white', 'VIN': 'ADFG89QWERUIJK2', 'body': 'sedan'}]
+
+>>> get_cars(color="white", brand="Lada", _and=False))
+[{'plate': 'l924jf', 'brand': 'GAZ', 'model': '2410', 'year': '1987', 'color': 'white', 'power': '70'}, 
+ {'plate': 'v483qw', 'brand': 'Lada', 'model': 'Kalina', 'year': '2013', 'color': 'white', 'VIN': 'ASDFG8YQ34WIR3S', 'body': 'sedan'}, 
+ {'plate': 'g631qe', 'brand': 'Lada', 'model': 'Kalina', 'year': '2014', 'color': 'white', 'VIN': 'ADFG89QWERUIJK2', 'body': 'sedan'}, 
+ {'plate': 'e456az', 'brand': 'Lada', 'model': 'Kalina', 'year': '2013', 'color': 'grey', 'VIN': 'ASDFG8YQ34WIR3S', 'body': 'sedan'}]
+
+>>> del_car("l924jf", "a222aa", "l098we")
+Warning: ['a222aa', 'l098we'] plate number(-s) have not been found
 ```
