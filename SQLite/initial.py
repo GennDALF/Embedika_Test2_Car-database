@@ -67,4 +67,8 @@ if connection:
 else:
     raise Error('no access to database')
 
-pass
+insert_cars_table = "INSERT INTO cars ({0}) VALUES (?{1})"
+insert_stats_table = "INSERT INTO stats ({0}) VALUES (?{1})"
+
+select_cars_table = "SELECT * FROM cars WHERE {0}"
+select_stats_table = "SELECT * FROM stats WHERE {0}"
