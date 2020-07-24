@@ -18,11 +18,14 @@ def create_connection(path):
 connection = create_connection('database.sqlite')
 
 
-def execute_query(query):
+def execute_query(query, values=None):
     global connection
     cursor = connection.cursor()
     try:
-        cursor.execute(query)
+        if values:
+            cursor.execute(query, values)
+        else:
+            cursor.execute(query)
         connection.commit()
         print("Query executed successfully")
     except Error as e:
@@ -67,8 +70,8 @@ if connection:
 else:
     raise Error('no access to database')
 
-insert_cars_table = "INSERT INTO cars ({0}) VALUES (?{1})"
-insert_stats_table = "INSERT INTO stats ({0}) VALUES (?{1})"
+insert_cars_table = "INSERT INTO cars ({0}) VALUES ({1})"
+insert_stats_table = "INSERT INTO stats ({0}) VALUES ({1})"
 
 select_cars_table = "SELECT * FROM cars WHERE {0}"
 select_stats_table = "SELECT * FROM stats WHERE {0}"
