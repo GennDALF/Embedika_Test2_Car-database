@@ -55,7 +55,7 @@ create_cars_table = ("CREATE TABLE IF NOT EXISTS cars (\n"
                      "  color TEXT NOT NULL,\n"
                      "  VIN TEXT,\n"
                      "  power REAL,\n"
-                     "  body TEXT NOT NULL);")
+                     "  body TEXT);")
 
 create_stats_table = ("CREATE TABLE IF NOT EXISTS history (\n"
                       "  id INTEGER PRIMARY KEY,\n"
