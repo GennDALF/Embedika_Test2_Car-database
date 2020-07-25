@@ -57,21 +57,46 @@ create_cars_table = ("CREATE TABLE IF NOT EXISTS cars (\n"
                      "  power REAL,\n"
                      "  body TEXT);")
 
-create_stats_table = ("CREATE TABLE IF NOT EXISTS history (\n"
-                      "  id INTEGER PRIMARY KEY,\n"
-                      "  track_car INTEGER NOT NULL,\n"
-                      "  entry_updated TEXT,\n"
-                      "  previous_state TEXT,\n"
-                      "  FOREIGN KEY(track_car) REFERENCES cars(id));")
+create_history_table = ("CREATE TABLE IF NOT EXISTS history (\n"
+                        "  id INTEGER PRIMARY KEY,\n"
+                        "  track_car INTEGER NOT NULL,\n"
+                        "  entry_updated TEXT,\n"
+                        "  previous_state TEXT,\n"
+                        "  FOREIGN KEY(track_car) REFERENCES cars(id));")
+
+create_cars_insert_trigger = ("CREATE TRIGGER IF NOT EXISTS first_history_entry\n"
+                              "    AFTER INSERT ON cars\n"
+                              "    BEGIN \n"
+                              "        INSERT INTO history (track_car, entry_updated)\n"
+                              "        VALUES (new.id, datetime('now','localtime'));\n"
+                              "    END;")
+
+create_cars_update_trigger = ("CREATE TRIGGER IF NOT EXISTS update_history \n"
+                              "    AFTER UPDATE ON cars WHEN old.id == new.id \n"
+                              "    BEGIN\n"
+                              "        INSERT INTO history (track_car, entry_updated, previous_state) \n"
+                              "        VALUES (new.id, \n"
+                              "                datetime('now','localtime'), \n"
+                              "                old.plate || ';' || \n"
+                              "                old.brand || ';' || \n"
+                              "                old.model || ';' || \n"
+                              "                old.year || ';' || \n"
+                              "                old.color || ';' || \n"
+                              "                coalesce(old.VIN, '<null>') || ';' || \n"
+                              "                coalesce(old.power, '<null>')  || ';' || \n"
+                              "                coalesce(old.body, '<null>')); \n"
+                              "    END;")
 
 if connection:
     execute_query(create_cars_table)
-    execute_query(create_stats_table)
+    execute_query(create_history_table)
+    execute_query(create_cars_insert_trigger)
+    execute_query(create_cars_update_trigger)
 else:
     raise Error('no access to database')
 
 insert_cars_table = "INSERT INTO cars ({0}) VALUES ({1})"
-insert_stats_table = "INSERT INTO stats ({0}) VALUES ({1})"
+insert_history_table = "INSERT INTO history ({0}) VALUES ({1})"
 
 select_cars_table = "SELECT * FROM cars WHERE {0}={1}"
-select_stats_table = "SELECT * FROM stats WHERE {0}={1}"
+select_history_table = "SELECT * FROM history WHERE {0}={1}"
