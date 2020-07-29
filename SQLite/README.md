@@ -44,7 +44,7 @@
 <br/><br/>
 
 ### Примеры
-```python_console
+```python-console
 >>> car1 = '[{"plate": "e456az", "brand": "Lada", "model": "Kalina", "year": "2013", ' \
 ...        '"color": "grey", "VIN": "ASDFG8YQ34WIR3","body": "sedan"}]'
 >>> add_car(car1)
