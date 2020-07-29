@@ -87,16 +87,29 @@ create_cars_update_trigger = ("CREATE TRIGGER IF NOT EXISTS update_history \n"
                               "                coalesce(old.body, '<null>')); \n"
                               "    END;")
 
+create_cars_delete_trigger = ("CREATE TRIGGER IF NOT EXISTS delete_history\n"
+                              "    AFTER DELETE ON cars\n"
+                              "    BEGIN\n"
+                              "        DELETE FROM history WHERE old.id == track_car;\n"
+                              "    END;")
+
 if connection:
     execute_query(create_cars_table)
     execute_query(create_history_table)
     execute_query(create_cars_insert_trigger)
     execute_query(create_cars_update_trigger)
+    execute_query(create_cars_delete_trigger)
 else:
     raise Error('no access to database')
 
 insert_cars_table = "INSERT INTO cars ({0}) VALUES ({1})"
-insert_history_table = "INSERT INTO history ({0}) VALUES ({1})"
+select_cars_table = "SELECT * FROM cars WHERE {0}"
+delete_cars_table = "DELETE FROM cars WHERE {0}"
 
-select_cars_table = "SELECT * FROM cars WHERE {0}={1}"
-select_history_table = "SELECT * FROM history WHERE {0}={1}"
+aggregate_all_cars = "SELECT count(1) FROM cars"
+first_last_update = ("SELECT min(entry_updated) FROM history\n"
+                     "UNION\n"
+                     "SELECT max(entry_updated) FROM history")
+cars_bodies = ("SELECT body, count(1) as amount FROM cars\n"
+               "GROUP BY body\n"
+               "ORDER BY amount DESC")
