@@ -42,7 +42,7 @@
 <br/><br/>
 
 ### Примеры
-```
+```python
 >>> car1 = {
 ...     'plate': "l924jf",
 ...     'brand': "GAZ",
